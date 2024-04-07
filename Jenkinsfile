@@ -49,7 +49,8 @@ pipeline {
             when {
                 allOf {
                     expression { env.BRANCH_NAME == 'main' }
-                    expression { currentBuild.rawBuild.getCause(hudson.model.Cause$UserIdCause) != null }
+                    // Replace the usage of getRawBuild with an alternative method
+                    expression { env.CAUSE_USER_ID != null }
                 }
             }
             steps {
