@@ -34,10 +34,12 @@ pipeline {
 
         stage('Terraform Plan') {
             steps {
-                script {
-                    withCredentials([aws(credentialsId: 'AWS_CREDENTIALS', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
-                        sh 'terraform init'
-                        sh 'terraform plan -out=tfplan'
+                container('terraform'){
+                    script {
+                        withCredentials([aws(credentialsId: 'AWS_CREDENTIALS', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+                            sh 'terraform init'
+                            sh 'terraform plan -out=tfplan'
+                        }
                     }
                 }
             }
@@ -51,12 +53,14 @@ pipeline {
                 }
             }
             steps {
-                script {
-                    // Ask for manual confirmation before applying changes
-                    input message: 'Do you want to apply changes?', ok: 'Yes'
-                    withCredentials([aws(credentialsId: 'AWS_CREDENTIALS', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
-                        sh 'terraform init'
-                        sh 'terraform apply -auto-approve tfplan'
+                container('terraform'){
+                    script {
+                        // Ask for manual confirmation before applying changes
+                        input message: 'Do you want to apply changes?', ok: 'Yes'
+                        withCredentials([aws(credentialsId: 'AWS_CREDENTIALS', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+                            sh 'terraform init'
+                            sh 'terraform apply -auto-approve tfplan'
+                        }
                     }
                 }
             }
