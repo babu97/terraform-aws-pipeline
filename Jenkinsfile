@@ -47,10 +47,9 @@ pipeline {
 
         stage('Terraform Apply') {
             when {
-                allOf {
                     expression { env.BRANCH_NAME == 'main' }
                     // Replace the usage of getRawBuild with an alternative method
-                    expression { env.CAUSE_USER_ID != null }
+                    expression { currentBuild.rawBuild.getCause(hudson.model.Cause$UserIdCause) != null }
                 }
             }
             steps {
