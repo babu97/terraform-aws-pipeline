@@ -47,10 +47,10 @@ pipeline {
 
         stage('Terraform Apply') {
             when {
-                allOf {
-                    expression { env.BRANCH_NAME == 'main' }
-                    expression { currentBuild.rawBuild.getCause(hudson.model.Cause$UserIdCause) != null }
-                }
+                    expression { 
+                          env.BRANCH_NAME == 'main' && currentBuild.causes.find { it instanceof hudson.model.UserIdCause }
+                     }
+                
             }
             steps {
                 container('terraform') {
