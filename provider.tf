@@ -6,6 +6,6 @@ terraform {
   backend "s3" {
     bucket = "cicd-babu"
     key    = "terraform.tfstate"
-    region = "eu-east-1"
+    region = "us-east-1"
   }
 }
