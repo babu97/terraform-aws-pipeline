@@ -39,6 +39,16 @@ pipeline {
                 }
             }
         }
+        stage('Terraform init'){
+            steps{
+                container('terraform') {
+                    script{
+                        sh 'terraform init'
+                    }
+            }
+        }
+        }
+ 
         stage('Terraform validate'){
             steps{
                 container('terraform') {
@@ -55,7 +65,6 @@ pipeline {
                     script {
                         echo "Starting Terraform Plan"
                         withCredentials([aws(credentialsId: 'AWS_CREDENTIALS', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
-                            sh 'terraform init'
                             sh 'terraform plan -out=tfplan'
                             echo "Terraform plan executed successfully!!"
                         }
