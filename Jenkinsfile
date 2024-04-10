@@ -41,10 +41,12 @@ pipeline {
         }
         stage('Terraform validate'){
             steps{
-                script{
-                    sh 'terraform validate'
-                }
+                container('terraform') {
+                    script{
+                        sh 'terraform validate'
+                    }
             }
+        }
         }
 
         stage('Terraform Plan') {
