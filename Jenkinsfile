@@ -22,6 +22,7 @@ pipeline {
     environment {
         TF_CLI_ARGS = '-no-color'
     }
+
     stages {
         stage("Clean Workspace") {
             steps {
@@ -29,8 +30,8 @@ pipeline {
                     deleteDir()
                 }
             }
+        }
 
-    stages {
         stage('Checkout') {
             steps {
                 script {
@@ -43,11 +44,11 @@ pipeline {
             steps {
                 container('terraform') {
                     script {
-                        echo "starting Terraform Plan"
+                        echo "Starting Terraform Plan"
                         withCredentials([aws(credentialsId: 'AWS_CREDENTIALS', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
                             sh 'terraform init'
                             sh 'terraform plan -out=tfplan'
-                            echo " terrafor plan executed succesfullyly!!"
+                            echo "Terraform plan executed successfully!!"
                         }
                     }
                 }
@@ -56,14 +57,14 @@ pipeline {
 
         stage('Terraform Apply') {
             when {
+                allOf {
                     expression { env.BRANCH_NAME == 'main' }
-                     expression { currentBuild.rawBuild.getCause(hudson.model.Cause$UserIdCause) != null }
-                
+                    expression { currentBuild.rawBuild.getCause(hudson.model.Cause$UserIdCause) != null }
+                }
             }
             steps {
                 container('terraform') {
                     script {
-                        
                         // Ask for manual confirmation before applying changes
                         input message: 'Do you want to apply changes?', ok: 'Yes'
                         withCredentials([aws(credentialsId: 'AWS_CREDENTIALS', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
@@ -71,9 +72,6 @@ pipeline {
                         }
                     }
                 }
-            }
-            steps{
-
             }
         }
     }
