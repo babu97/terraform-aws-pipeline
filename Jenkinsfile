@@ -22,6 +22,13 @@ pipeline {
     environment {
         TF_CLI_ARGS = '-no-color'
     }
+    stages {
+        stage("Clean Workspace") {
+            steps {
+                dir("${WORKSPACE}") {
+                    deleteDir()
+                }
+            }
 
     stages {
         stage('Checkout') {
@@ -36,9 +43,11 @@ pipeline {
             steps {
                 container('terraform') {
                     script {
+                        echo "starting Terraform Plan"
                         withCredentials([aws(credentialsId: 'AWS_CREDENTIALS', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
                             sh 'terraform init'
                             sh 'terraform plan -out=tfplan'
+                            echo " terrafor plan executed succesfullyly!!"
                         }
                     }
                 }
@@ -54,6 +63,7 @@ pipeline {
             steps {
                 container('terraform') {
                     script {
+                        
                         // Ask for manual confirmation before applying changes
                         input message: 'Do you want to apply changes?', ok: 'Yes'
                         withCredentials([aws(credentialsId: 'AWS_CREDENTIALS', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
@@ -61,6 +71,9 @@ pipeline {
                         }
                     }
                 }
+            }
+            steps{
+
             }
         }
     }
