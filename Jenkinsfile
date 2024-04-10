@@ -76,7 +76,7 @@ pipeline {
         stage('Terraform Apply') {
             when {
                 allOf {
-                    expression { env.BRANCH_NAME == 'main' }
+                    // expression { env.BRANCH_NAME == 'main' }
                     expression { currentBuild.rawBuild.getCause(hudson.model.Cause$UserIdCause) != null }
                 }
             }
